@@ -44,7 +44,6 @@ export class SiteCrudComponent implements OnInit {
     this.siteService.getSites().subscribe(s => this.sites = s);
   }
 
-  // Filter sites based on search and category
   filteredSites(): SiteH[] {
     return this.sites.filter(s => {
       const matchesSearch = !this.searchTerm ||
@@ -55,7 +54,6 @@ export class SiteCrudComponent implements OnInit {
     });
   }
 
-  // Stats helpers
   getClassifiedCount(): number {
     return this.sites.filter(s => s.estClasse).length;
   }
@@ -64,7 +62,6 @@ export class SiteCrudComponent implements OnInit {
     return this.sites.filter(s => s.prixEntree === 0).length;
   }
 
-  // UI helpers
   truncate(text: string, length: number): string {
     if (!text) return '';
     return text.length > length ? text.substring(0, length) + '...' : text;

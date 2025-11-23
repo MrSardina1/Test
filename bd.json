@@ -4,7 +4,7 @@
       "id": "1",
       "nom": "Médina de Tunis",
       "localisation": "Tunis",
-      "photo": "assets/medina.png",
+      "photo": "images/medina.png",
       "dateConstruction": "1600-01-01T00:00:00.000Z",
       "estClasse": true,
       "prixEntree": 0,
@@ -24,23 +24,42 @@
       ],
       "latitude": 36.8065,
       "longitude": 10.1815,
-      "comments": []
+      "comments": [
+        {
+          "id": "c1",
+          "nom": "Ahmed Ben Ali",
+          "message": "Magnifique endroit ! L'architecture est incroyable et l'atmosphère est authentique. Je recommande vivement une visite guidée.",
+          "date": "2025-11-20T14:30:00.000Z",
+          "note": 5,
+          "approved": true
+        },
+        {
+          "id": "c2",
+          "nom": "Sarah Dubois",
+          "message": "Très belle médina, mais un peu bondée le week-end. Préférez y aller en semaine pour profiter du calme.",
+          "date": "2025-11-18T10:15:00.000Z",
+          "note": 4,
+          "approved": true
+        }
+      ]
     },
     {
-      "id": "2164",
-      "nom": "hassen",
-      "localisation": "hassen",
-      "photo": "assets/medina.png",
-      "dateConstruction": "2025-01-02",
+      "id": "2",
+      "nom": "Site de Carthage",
+      "localisation": "Carthage",
+      "photo": "images/medina.png",
+      "dateConstruction": "814-01-01T00:00:00.000Z",
       "estClasse": true,
-      "prixEntree": 25,
-      "description": "jj",
-      "categorie": "uuu",
-      "horaires": [],
+      "prixEntree": 12,
+      "description": "Site archéologique antique",
+      "categorie": "Site Archéologique",
+      "horaires": [
+        "8:00-18:00"
+      ],
       "visitesGuideesDisponibles": true,
       "lieuxProches": [],
-      "latitude": 0,
-      "longitude": 0,
+      "latitude": 36.8531,
+      "longitude": 10.3231,
       "comments": []
     }
   ],
@@ -48,9 +67,67 @@
     {
       "id": "admin-1",
       "username": "admin",
+      "email": "admin@patrimoine.tn",
       "password": "admin",
-      "role": "admin",
-      "dernierLogin": "2025-11-23T00:32:07.335Z"
+      "role": "super_admin",
+      "fullName": "Mohamed Administrateur",
+      "avatar": "images/medina.png",
+      "phone": "+216 20 123 456",
+      "dateCreated": "2024-01-15T10:00:00.000Z",
+      "dernierLogin": "2025-11-23T02:03:26.161Z",
+      "isActive": true
+    },
+    {
+      "id": "admin-2",
+      "username": "moderator1",
+      "email": "moderator@patrimoine.tn",
+      "password": "moderator123",
+      "role": "moderator",
+      "fullName": "Fatma Ben Salem",
+      "avatar": "images/medina.png",
+      "phone": "+216 22 456 789",
+      "dateCreated": "2024-03-20T14:30:00.000Z",
+      "dernierLogin": "2025-11-23T02:03:09.087Z",
+      "isActive": true
+    },
+    {
+      "id": "admin-3",
+      "username": "editor1",
+      "email": "editor@patrimoine.tn",
+      "password": "editor123",
+      "role": "editor",
+      "fullName": "Ahmed Trabelsi",
+      "avatar": "images/medina.png",
+      "phone": "+216 23 789 012",
+      "dateCreated": "2024-06-10T09:15:00.000Z",
+      "dernierLogin": "2025-11-23T02:03:21.062Z",
+      "isActive": true
+    },
+    {
+      "id": "admin-4",
+      "username": "moderator2",
+      "email": "sarah.moderator@patrimoine.tn",
+      "password": "sarah123",
+      "role": "moderator",
+      "fullName": "Sarah Khelifi",
+      "avatar": "images/medina.png",
+      "phone": "+216 24 345 678",
+      "dateCreated": "2024-08-05T13:00:00.000Z",
+      "dernierLogin": "2025-11-20T09:10:00.000Z",
+      "isActive": true
+    },
+    {
+      "id": "admin-5",
+      "username": "editor2",
+      "email": "karim.editor@patrimoine.tn",
+      "password": "karim123",
+      "role": "editor",
+      "fullName": "Karim Bouzid",
+      "avatar": "images/medina.png",
+      "phone": "+216 25 567 890",
+      "dateCreated": "2024-09-12T10:30:00.000Z",
+      "dernierLogin": "2025-11-19T14:55:00.000Z",
+      "isActive": false
     }
   ]
 }

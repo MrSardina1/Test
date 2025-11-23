@@ -2,11 +2,24 @@
   <aside class="sidebar">
     <h2>Admin Panel</h2>
 
-    <a routerLink="/admin/dashboard">Dashboard</a>
-    <a routerLink="/admin/comments-moderation">Comments Moderation</a>
-    <a routerLink="/admin/site-crud">Manage Sites</a>
-    <a routerLink="/admin/change-password">Change Password</a>
-    <a routerLink="/login">Logout</a>
+    <a routerLink="/admin/dashboard">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a routerLink="/admin/site-crud">
+      <i class="bi bi-geo-alt"></i> Manage Sites
+    </a>
+    <a routerLink="/admin/comments-moderation">
+      <i class="bi bi-chat-square-text"></i> Comments
+    </a>
+    <a routerLink="/admin/user-management">
+      <i class="bi bi-people"></i> Users
+    </a>
+    <a routerLink="/admin/change-password">
+      <i class="bi bi-key"></i> Change Password
+    </a>
+    <a (click)="logout()" style="cursor: pointer;">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
   </aside>
 
   <main class="content">

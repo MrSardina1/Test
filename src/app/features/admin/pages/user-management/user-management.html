@@ -1,0 +1,240 @@
+<div class="crud-container">
+  <div class="crud-card">
+    <div class="crud-header">
+      <div class="header-icon">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <h2>Gestion des Utilisateurs</h2>
+      <p class="text-muted">Gérer les administrateurs et modérateurs du système</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon bg-primary">
+          <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ getTotalUsers() }}</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon bg-success">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ getActiveUsers() }}</span>
+          <span class="stat-label">Actifs</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon bg-warning">
+          <i class="bi bi-x-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number">{{ getInactiveUsers() }}</span>
+          <span class="stat-label">Inactifs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <i class="bi bi-search"></i> Recherche & Filtres
+    </div>
+
+    <div class="search-filter-row">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          placeholder="Rechercher par nom, email ou username..."
+        />
+      </div>
+
+      <select class="form-select filter-select" [(ngModel)]="filterRole" (ngModelChange)="applyFilters()">
+        <option value="">Tous les rôles</option>
+        <option value="super_admin">Super Admin</option>
+        <option value="moderator">Modérateur</option>
+        <option value="editor">Éditeur</option>
+      </select>
+
+      <select class="form-select filter-select" [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+        <option value="">Tous les statuts</option>
+        <option value="active">Actifs</option>
+        <option value="inactive">Inactifs</option>
+      </select>
+
+      <button (click)="openAddForm()" class="btn btn-add">
+        <i class="bi bi-plus-lg me-2"></i>Ajouter Utilisateur
+      </button>
+    </div>
+
+    <div class="section-title">
+      <i class="bi bi-list-ul"></i> Liste des Utilisateurs
+    </div>
+
+    @if (filteredUsers.length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-person-x"></i>
+        <h4>Aucun utilisateur trouvé</h4>
+        <p>{{ searchTerm || filterRole || filterStatus ? 'Essayez d\'ajuster vos filtres' : 'Commencez par ajouter un utilisateur' }}</p>
+        <button (click)="openAddForm()" class="btn btn-add">
+          <i class="bi bi-plus-lg me-2"></i>Ajouter le premier utilisateur
+        </button>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Dernière connexion</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; track user.id) {
+              <tr>
+                <td>
+                  <div class="user-info">
+                    <div class="user-image">
+                      <img [src]="user.avatar || 'https://i.pravatar.cc/150'" [alt]="user.fullName" />
+                      <span class="status-dot" [class.active]="user.isActive"></span>
+                    </div>
+                    <div class="user-details">
+                      <span class="user-name">{{ user.fullName }}</span>
+                      <span class="user-username">@{{ user.username }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="email-badge">
+                    <i class="bi bi-envelope me-1"></i>{{ user.email }}
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="user.phone">
+                    <i class="bi bi-telephone me-1"></i>{{ user.phone }}
+                  </span>
+                  <span *ngIf="!user.phone" class="text-muted">-</span>
+                </td>
+                <td>
+                  <span class="role-badge" [ngClass]="getRoleBadgeClass(user.role)">
+                    <i class="bi bi-shield"></i>
+                    {{ getRoleLabel(user.role) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="user.isActive">
+                    <i class="bi" [ngClass]="user.isActive ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    {{ user.isActive ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="last-login">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ getTimeSinceLogin(user.dernierLogin) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button (click)="openEditForm(user)" class="btn-action btn-edit" title="Modifier">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button (click)="toggleStatus(user)" class="btn-action btn-toggle" [title]="user.isActive ? 'Désactiver' : 'Activer'">
+                      <i class="bi" [ngClass]="user.isActive ? 'bi-toggle-on' : 'bi-toggle-off'"></i>
+                    </button>
+                    <button (click)="deleteUser(user.id)" class="btn-action btn-delete" title="Supprimer">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showForm) {
+  <div class="modal-overlay" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="bi" [ngClass]="editingId ? 'bi-person-gear' : 'bi-person-plus'"></i>
+          {{ editingId ? 'Modifier Utilisateur' : 'Nouvel Utilisateur' }}
+        </h3>
+        <button type="button" class="btn-close" (click)="cancelForm()"></button>
+      </div>
+
+      <form (submit)="saveUser(); $event.preventDefault()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nom Complet *</label>
+              <input type="text" class="form-control" [(ngModel)]="formData.fullName" name="fullName" placeholder="Ex: Mohamed Ben Ali" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Username *</label>
+              <input type="text" class="form-control" [(ngModel)]="formData.username" name="username" placeholder="Ex: mohamed123" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" [(ngModel)]="formData.email" name="email" placeholder="email@example.com" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" [(ngModel)]="formData.phone" name="phone" placeholder="+216 XX XXX XXX" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Mot de passe {{ editingId ? '(laisser vide pour ne pas changer)' : '*' }}</label>
+              <input type="password" class="form-control" [(ngModel)]="formData.password" name="password" placeholder="••••••••" [required]="!editingId" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Rôle *</label>
+              <select class="form-select" [(ngModel)]="formData.role" name="role" required>
+                <option value="editor">Éditeur</option>
+                <option value="moderator">Modérateur</option>
+                <option value="super_admin">Super Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">URL Avatar</label>
+            <input type="url" class="form-control" [(ngModel)]="formData.avatar" name="avatar" placeholder="https://example.com/avatar.jpg" />
+            <small class="text-muted">Laissez vide pour générer un avatar automatique</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()">
+            <i class="bi bi-x-lg me-1"></i>Annuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>{{ editingId ? 'Mettre à jour' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

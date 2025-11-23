@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Site } from '../../../../core/services/site';
 import { SiteH } from '../../../../code/models/siteH.model';
 import { Commentaire } from '../../../../code/models/commentaire.model';
@@ -13,12 +14,14 @@ interface CommentWithSite {
 @Component({
   selector: 'app-comments-moderation',
   templateUrl: './comments-moderation.html',
-  imports: [DatePipe],
+  imports: [DatePipe, CommonModule, FormsModule],
   styleUrls: ['./comments-moderation.css']
 })
 export class CommentsModerationComponent implements OnInit {
   allComments: CommentWithSite[] = [];
   sites: SiteH[] = [];
+  selectedSiteId: string = '';
+  selectedStatus: string = '';
 
   constructor(private siteService: Site) {}
 
@@ -41,6 +44,43 @@ export class CommentsModerationComponent implements OnInit {
         });
       });
     });
+  }
+
+  filteredComments(): CommentWithSite[] {
+    return this.allComments.filter(item => {
+      const matchSite = !this.selectedSiteId || item.siteId === this.selectedSiteId;
+
+      let matchStatus = true;
+      if (this.selectedStatus === 'approved') {
+        matchStatus = item.comment.approved === true;
+      } else if (this.selectedStatus === 'rejected') {
+        matchStatus = item.comment.approved === false;
+      } else if (this.selectedStatus === 'pending') {
+        matchStatus = item.comment.approved === undefined;
+      }
+
+      return matchSite && matchStatus;
+    });
+  }
+
+  getTotalComments(): number {
+    return this.allComments.length;
+  }
+
+  getApprovedCount(): number {
+    return this.allComments.filter(c => c.comment.approved === true).length;
+  }
+
+  getRejectedCount(): number {
+    return this.allComments.filter(c => c.comment.approved === false).length;
+  }
+
+  getPendingCount(): number {
+    return this.allComments.filter(c => c.comment.approved === undefined).length;
+  }
+
+  getCommentsCountForSite(siteId: string): number {
+    return this.allComments.filter(c => c.siteId === siteId).length;
   }
 
   approve(item: CommentWithSite) {
@@ -66,7 +106,7 @@ export class CommentsModerationComponent implements OnInit {
   }
 
   delete(item: CommentWithSite) {
-    if (!confirm('Delete this comment?')) return;
+    if (!confirm('Supprimer ce commentaire ?')) return;
 
     this.siteService.deleteComment(item.siteId, item.comment.id).subscribe(() => {
       this.loadComments();

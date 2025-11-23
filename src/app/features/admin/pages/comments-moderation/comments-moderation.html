@@ -1,41 +1,140 @@
-<h2>Comments Moderation</h2>
+<div class="moderation-container">
+  <div class="moderation-header">
+    <h2><i class="bi bi-chat-square-text"></i> Comments Moderation</h2>
+    <p class="text-muted">Manage and moderate user comments</p>
+  </div>
 
-<div class="alert alert-info">
-  @if(allComments.length === 0){
-    No comments found
-  }
-</div>
-
-<div class="comment-card">
-  @for(item of allComments; track $index) {
-    <div class="comment-header">
-      <h5>{{ item.siteName }}</h5>
-      <span [class]="'badge ' + getStatusClass(item.comment.approved)">
-        {{ getStatusBadge(item.comment.approved) }}
-      </span>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon bg-primary">
+        <i class="bi bi-chat-dots"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-number">{{ getTotalComments() }}</span>
+        <span class="stat-label">Total Comments</span>
+      </div>
     </div>
 
-    <div class="comment-content">
-      <p><strong>Author:</strong> {{ item.comment.nom }}</p>
-      <p><strong>Message:</strong> {{ item.comment.message }}</p>
-      <p><strong>Date:</strong> {{ item.comment.date | date: 'short' }}</p>
-      <p>
-        @if(item.comment.note){
-          <strong>Rating:</strong> {{ item.comment.note }}/5
-        }
-      </p>
+    <div class="stat-card">
+      <div class="stat-icon bg-success">
+        <i class="bi bi-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-number">{{ getApprovedCount() }}</span>
+        <span class="stat-label">Approved</span>
+      </div>
     </div>
 
-    <div class="comment-actions">
-      @if(item.comment.approved !== true){
-        <button (click)="approve(item)" class="btn btn-sm btn-success">Approve</button>
-      }
-      @if(item.comment.approved !== false){
-        <button (click)="reject(item)" class="btn btn-sm btn-warning">Reject</button>
-      }
-      <button (click)="delete(item)" class="btn btn-sm btn-danger">
-        Delete
-      </button>
+    <div class="stat-card">
+      <div class="stat-icon bg-danger">
+        <i class="bi bi-x-circle"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-number">{{ getRejectedCount() }}</span>
+        <span class="stat-label">Rejected</span>
+      </div>
     </div>
+
+    <div class="stat-card">
+      <div class="stat-icon bg-warning">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-number">{{ getPendingCount() }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label class="filter-label">
+          <i class="bi bi-funnel"></i> Filter by Site
+        </label>
+        <select class="form-select" [(ngModel)]="selectedSiteId">
+          <option value="">All Sites</option>
+          <option *ngFor="let site of sites" [value]="site.id">
+            {{ site.nom }} ({{ getCommentsCountForSite(site.id) }} comments)
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">
+          <i class="bi bi-filter-circle"></i> Filter by Status
+        </label>
+        <select class="form-select" [(ngModel)]="selectedStatus">
+          <option value="">All Status</option>
+          <option value="approved">✓ Approved</option>
+          <option value="rejected">✗ Rejected</option>
+          <option value="pending">⏳ Pending</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <button class="btn btn-outline-secondary" (click)="selectedSiteId = ''; selectedStatus = ''">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-results">
+      Showing <strong>{{ filteredComments().length }}</strong> of <strong>{{ getTotalComments() }}</strong> comments
+    </div>
+  </div>
+
+  @if(filteredComments().length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <h4>No comments found</h4>
+      <p>{{ selectedSiteId || selectedStatus ? 'Try adjusting your filters' : 'No comments have been submitted yet' }}</p>
+    </div>
+  } @else {
+    @for(item of filteredComments(); track item.comment.id) {
+      <div class="comment-card">
+        <div class="comment-header">
+          <div class="comment-site-info">
+            <i class="bi bi-geo-alt-fill"></i>
+            <h5>{{ item.siteName }}</h5>
+          </div>
+          <span [class]="'badge ' + getStatusClass(item.comment.approved)">
+            {{ getStatusBadge(item.comment.approved) }}
+          </span>
+        </div>
+
+        <div class="comment-content">
+          <div class="comment-author">
+            <i class="bi bi-person-circle"></i>
+            <strong>{{ item.comment.nom }}</strong>
+          </div>
+          <p class="comment-message">{{ item.comment.message }}</p>
+          <div class="comment-meta">
+            <span><i class="bi bi-calendar3"></i> {{ item.comment.date | date: 'medium' }}</span>
+            @if(item.comment.note) {
+              <span class="comment-rating">
+                <i class="bi bi-star-fill"></i> {{ item.comment.note }}/5
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="comment-actions">
+          @if(item.comment.approved !== true) {
+            <button (click)="approve(item)" class="btn btn-sm btn-success">
+              <i class="bi bi-check-lg"></i> Approve
+            </button>
+          }
+          @if(item.comment.approved !== false) {
+            <button (click)="reject(item)" class="btn btn-sm btn-warning">
+              <i class="bi bi-x-lg"></i> Reject
+            </button>
+          }
+          <button (click)="delete(item)" class="btn btn-sm btn-danger">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    }
   }
 </div>
